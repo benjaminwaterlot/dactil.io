@@ -2,23 +2,20 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
-import { ChakraProvider, CSSReset, extendTheme } from '@chakra-ui/core'
+import { ChakraProvider, CSSReset } from '@chakra-ui/core'
+import { RecoilRoot } from 'recoil'
+import theme from './chakra'
 
-const customTheme = extendTheme({
-  config: { initialColorMode: 'dark', useSystemColorMode: false },
-  fonts: {
-    heading: 'Merriweather',
-  },
-})
-
-console.log({ theme: customTheme })
+console.log({ theme })
 
 ReactDOM.render(
   <React.StrictMode>
-    <ChakraProvider theme={customTheme}>
-      <CSSReset />
-      <App />
-    </ChakraProvider>
+    <RecoilRoot>
+      <ChakraProvider theme={theme}>
+        <CSSReset />
+        <App />
+      </ChakraProvider>
+    </RecoilRoot>
   </React.StrictMode>,
   document.getElementById('root')
 )
