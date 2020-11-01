@@ -7,11 +7,8 @@ export enum KEY_STATUS {
 }
 
 export interface GameContext {
-  sentences: string[]
-  current: {
-    sentence: number
-    character: number
-  }
+  sentence: string
+  currentCharacter: number
   saved: {
     key: string
     type: KEY_STATUS
@@ -45,11 +42,8 @@ export const gameMachine = Machine<GameContext, GameSchema, GameEvent>(
   {
     id: 'game-machine',
     context: {
-      sentences: ['yay', 'The spectacle before us was indeed sublime.', 'hello'],
-      current: {
-        sentence: 0,
-        character: 0,
-      },
+      sentence: 'The spectacle before us was indeed sublime.',
+      currentCharacter: 0,
       saved: {
         key: '',
         type: KEY_STATUS.NEUTRAL,
@@ -62,7 +56,7 @@ export const gameMachine = Machine<GameContext, GameSchema, GameEvent>(
         always: [
           {
             target: 'over',
-            cond: ({ current, sentences }) => current.sentence === sentences.length,
+            cond: ({ currentCharacter, sentence }) => currentCharacter === sentence.length,
           },
         ],
         on: {
@@ -79,42 +73,29 @@ export const gameMachine = Machine<GameContext, GameSchema, GameEvent>(
   },
   {
     guards: {
-      isCorrectInput: ({ sentences, current }, event) => {
-        const currentSentence = sentences[current.sentence]
-        const isCorrectInput = (currentSentence[current.character] ?? 'Enter') === event.key
+      isCorrectInput: ({ sentence, currentCharacter }, event) => {
+        const isCorrectInput = (sentence[currentCharacter] ?? 'Enter') === event.key
 
         return isCorrectInput
       },
     },
     actions: {
       saveCorrectInput: assign({
-        saved: ({ current, sentences }, event) => ({
+        saved: (context, event) => ({
           key: event.key,
           type: KEY_STATUS.VALID,
         }),
       }),
       saveIncorrectInput: assign({
-        saved: ({ current, sentences }, event) => ({
+        saved: (context, event) => ({
           key: event.key,
           type: KEY_STATUS.ERROR,
         }),
         errors: ({ errors }, event) => [...errors, event.key],
       }),
-      incrementChar: assign(({ current, sentences }) =>
-        current.character >= sentences[current.sentence].length
-          ? {
-              current: {
-                character: 0,
-                sentence: current.sentence + 1,
-              },
-            }
-          : {
-              current: {
-                character: current.character + 1,
-                sentence: current.sentence,
-              },
-            }
-      ),
+      incrementChar: assign({
+        currentCharacter: ({ currentCharacter }) => currentCharacter + 1,
+      }),
     },
   }
 )

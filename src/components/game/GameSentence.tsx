@@ -1,42 +1,37 @@
 import React from 'react'
-import { Box, Text } from '@chakra-ui/core'
-import take from 'lodash/take'
-import slice from 'lodash/slice'
+import { Text } from '@chakra-ui/core'
+import { GameSentenceCharDictionnary } from './game-sentence.types'
+import {
+  GameSentenceCharDimmed,
+  GameSentenceCharHighlighted,
+  GameSentenceCharRegular,
+} from './GameSentenceChar'
 
-const GameHighlightedChar = ({ char }: { char: string }) => (
-  <Box as="span" bg="white" color="gray.800">
-    {char}
-  </Box>
-)
+const CHAR_COMPONENTS = [
+  [(index, currentCharacter) => index < currentCharacter, GameSentenceCharDimmed],
+  [(index, currentCharacter) => index === currentCharacter, GameSentenceCharHighlighted],
+  [() => true, GameSentenceCharRegular],
+] as GameSentenceCharDictionnary
 
-const GameSentenceInactive = ({ sentence }: { sentence: string }) => (
-  <Text my={5} layerStyle="sentence.inactive">
-    {sentence}
-  </Text>
-)
-
-const GameSentenceActive = ({ sentence, cursorAt }: { sentence: string; cursorAt: number }) => {
-  const donePart = take(sentence, cursorAt)
-  const toDoPart = slice(sentence, cursorAt + 1)
+const GameSentence = ({
+  sentence,
+  currentCharacter,
+}: {
+  sentence: string
+  currentCharacter: number
+}) => {
+  const getCharComponent = (idx: number) =>
+    CHAR_COMPONENTS.find(([predicate]) => predicate(idx, currentCharacter))?.[1]
 
   return (
     <Text my={5}>
-      <Text as="span" layerStyle="sentence.inactive">
-        {donePart}
-      </Text>
-      <GameHighlightedChar char={sentence[cursorAt] ?? '_'} />
-      <Text as="span" layerStyle="sentence.active">
-        {toDoPart}
-      </Text>
+      {sentence.split('').map((char, index) => {
+        const CharComponent = getCharComponent(index)
+
+        return CharComponent && <CharComponent key={index} char={char} />
+      })}
     </Text>
   )
 }
-
-const GameSentence = ({ sentence, cursorAt }: { sentence: string; cursorAt: number | null }) =>
-  cursorAt === null ? (
-    <GameSentenceInactive sentence={sentence} />
-  ) : (
-    <GameSentenceActive {...{ sentence, cursorAt }} />
-  )
 
 export default GameSentence

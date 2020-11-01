@@ -1,7 +1,7 @@
 import React from 'react'
 import { Box, useColorModeValue } from '@chakra-ui/core'
 
-import { GameMachineState, Send } from '../../store/game/machine'
+import { GameMachineState, Send } from 'store/game/machine'
 import useKeyListener from './use-key-listener'
 
 import GameStats from './GameStats'
@@ -22,11 +22,7 @@ const Game = ({ current: { context, value }, send }: { current: GameMachineState
       fontFamily="mono"
       fontSize="lg"
     >
-      {context.sentences.map((sentence, idx) => {
-        const cursorAt = context.current.sentence === idx ? context.current.character : null
-
-        return <GameSentence key={sentence} {...{ sentence, cursorAt }} />
-      })}
+      <GameSentence sentence={context.sentence} currentCharacter={context.currentCharacter} />
 
       <br></br>
       <pre>{value}</pre>

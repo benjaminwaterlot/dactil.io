@@ -7,8 +7,7 @@ import Game from './components/game/Game'
 function App() {
   const [current, send] = useMachine(gameMachine)
 
-  console.log(current.value)
-  console.log(current.context)
+  console.log(current.value, current.context)
 
   return (
     <Flex as="header" py={12} px={6} direction="column" align="center">
