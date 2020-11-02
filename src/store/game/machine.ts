@@ -8,7 +8,7 @@ export enum KEY_STATUS {
 
 export interface GameContext {
   sentence: string
-  currentCharacter: number
+  activeChar: number
   saved: {
     key: string
     type: KEY_STATUS
@@ -35,15 +35,12 @@ export type Send = (
   payload?: EventData | undefined
 ) => GameMachineState
 
-/**
- * Machine
- */
 export const gameMachine = Machine<GameContext, GameSchema, GameEvent>(
   {
     id: 'game-machine',
     context: {
-      sentence: 'The spectacle before us was indeed sublime.',
-      currentCharacter: 0,
+      sentence: '',
+      activeChar: 0,
       saved: {
         key: '',
         type: KEY_STATUS.NEUTRAL,
@@ -53,10 +50,12 @@ export const gameMachine = Machine<GameContext, GameSchema, GameEvent>(
     initial: 'playing',
     states: {
       playing: {
+        meta: 'Game playing !',
+
         always: [
           {
             target: 'over',
-            cond: ({ currentCharacter, sentence }) => currentCharacter === sentence.length,
+            cond: 'sentenceIsDone',
           },
         ],
         on: {
@@ -68,16 +67,18 @@ export const gameMachine = Machine<GameContext, GameSchema, GameEvent>(
       },
       over: {
         type: 'final',
+        meta: 'Game over !',
       },
     },
   },
   {
     guards: {
-      isCorrectInput: ({ sentence, currentCharacter }, event) => {
-        const isCorrectInput = (sentence[currentCharacter] ?? 'Enter') === event.key
+      isCorrectInput: ({ sentence, activeChar }, event) => {
+        const isCorrectInput = (sentence[activeChar] ?? 'Enter') === event.key
 
         return isCorrectInput
       },
+      sentenceIsDone: ({ sentence, activeChar }) => activeChar === sentence.length,
     },
     actions: {
       saveCorrectInput: assign({
@@ -94,7 +95,7 @@ export const gameMachine = Machine<GameContext, GameSchema, GameEvent>(
         errors: ({ errors }, event) => [...errors, event.key],
       }),
       incrementChar: assign({
-        currentCharacter: ({ currentCharacter }) => currentCharacter + 1,
+        activeChar: ({ activeChar }) => activeChar + 1,
       }),
     },
   }

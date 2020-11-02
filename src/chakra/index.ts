@@ -5,6 +5,7 @@ const theme = extendTheme({
   config: { initialColorMode: 'dark', useSystemColorMode: false },
   fonts: {
     heading: 'Merriweather',
+    mono: 'Operator Mono',
   },
   layerStyles,
 })

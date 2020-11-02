@@ -1,24 +1,95 @@
 import React from 'react'
-import { Box, Circle, SlideFade, Text } from '@chakra-ui/core'
-import { GameContext } from 'store/game/machine'
+import {
+  Box,
+  Circle,
+  SlideFade,
+  Stat,
+  StatArrow,
+  StatHelpText,
+  StatLabel,
+  StatNumber,
+  useColorModeValue,
+  Wrap,
+  WrapItem,
+} from '@chakra-ui/core'
+import { GameContext, KEY_STATUS } from 'store/game/machine'
+import { WarningTwoIcon, ArrowRightIcon } from '@chakra-ui/icons'
+import useColor from 'lib/use-color'
 
-const GameStats = ({ context }: { context: GameContext }) => (
-  <Box position="fixed" bottom="0" left="0" w="100%" backgroundColor="gray.500" p={10}>
-    <Text>Erreurs: {context.errors.length}</Text>
+const CIRCLE_SIZE = 110
+
+const GameStatsChar = ({ saved, ...rest }: { saved: { type: KEY_STATUS; key: string } }) => {
+  const colors = {
+    bg: useColor('primary.900'),
+    border: useColorModeValue('white', 'gray.800'),
+  }
+
+  return (
     <Circle
-      bg={context.saved.type === 'ERROR' ? 'tomato' : 'gray.700'}
-      transition="background-color .2s ease-out"
-      size="100px"
-      pos="absolute"
-      top="-50px"
-      left="calc(50% - 50px)"
-      fontSize="48px"
+      bg={saved.type === KEY_STATUS.ERROR ? 'red.600' : colors.bg}
+      color={saved.type === KEY_STATUS.ERROR ? 'white' : undefined}
+      borderColor={colors.border}
+      borderWidth={10}
+      transition="background-color .15s ease-out"
+      size={CIRCLE_SIZE}
+      fontSize="5xl"
       fontWeight="bolder"
     >
-      <SlideFade in={Boolean(context.saved)} key={context.saved.key}>
-        {context.saved.key}
+      <SlideFade in={Boolean(saved)} key={saved.key}>
+        {saved.key}
       </SlideFade>
     </Circle>
+  )
+}
+
+const GameStatsErrors = ({ count }: { count: number }) => (
+  <Stat>
+    <StatLabel>
+      <WarningTwoIcon mr={2} />
+      Errors
+    </StatLabel>
+    <StatNumber>{count}</StatNumber>
+    <StatHelpText>
+      <StatArrow type="decrease" />
+      25% more!
+    </StatHelpText>
+  </Stat>
+)
+
+const GameStatsWPM = ({ wpm }: { wpm: number }) => (
+  <Stat>
+    <StatLabel>
+      <ArrowRightIcon mr={2} />
+      WPM
+    </StatLabel>
+    <StatNumber>{wpm}</StatNumber>
+    <StatHelpText>
+      <StatArrow type="increase" />
+      12% increase
+    </StatHelpText>
+  </Stat>
+)
+
+const GameStats = ({ context }: { context: GameContext }) => (
+  <Box position="fixed" bottom="0" left="0" w="100%">
+    <Wrap spacing={10} backgroundColor={useColor('primary.900')} p={10}>
+      <WrapItem>
+        <GameStatsErrors count={context.errors.length} />
+      </WrapItem>
+      <WrapItem>
+        <GameStatsWPM wpm={context.errors.length} />
+      </WrapItem>
+    </Wrap>
+
+    <Box
+      position="absolute"
+      top={`-${CIRCLE_SIZE * 0.7}px`}
+      left={`calc(50% - ${CIRCLE_SIZE / 2}px)`}
+    >
+      <SlideFade in={Boolean(context.saved.key)}>
+        <GameStatsChar saved={context.saved} />
+      </SlideFade>
+    </Box>
   </Box>
 )
 

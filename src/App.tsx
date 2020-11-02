@@ -1,13 +1,9 @@
 import React from 'react'
-import { Flex, Heading } from '@chakra-ui/core'
-import { useMachine } from '@xstate/react'
-import { gameMachine } from './store/game/machine'
+import { Button, Flex, Heading, useColorMode } from '@chakra-ui/core'
 import Game from './components/game/Game'
 
-function App() {
-  const [current, send] = useMachine(gameMachine)
-
-  console.log(current.value, current.context)
+const App = () => {
+  const { toggleColorMode } = useColorMode()
 
   return (
     <Flex as="header" py={12} px={6} direction="column" align="center">
@@ -15,7 +11,11 @@ function App() {
         Dactil.io
       </Heading>
 
-      <Game current={current} send={send} />
+      <Game />
+
+      <Button my={5} onClick={toggleColorMode}>
+        Toggle mode
+      </Button>
     </Flex>
   )
 }
