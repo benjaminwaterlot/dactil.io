@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button, Flex, Heading, useColorMode } from '@chakra-ui/core'
-import Game from './components/game/Game'
+import Game from './components/Game/Game'
 
 const App = () => {
   const { toggleColorMode } = useColorMode()

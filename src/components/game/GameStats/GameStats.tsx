@@ -18,7 +18,7 @@ import useColor from 'lib/use-color'
 
 const CIRCLE_SIZE = 110
 
-const GameStatsChar = ({ saved, ...rest }: { saved: { type: KEY_STATUS; key: string } }) => {
+const GameStatsChar = ({ saved }: { saved: { type: KEY_STATUS; key: string } }) => {
   const colors = {
     bg: useColor('primary.900'),
     border: useColorModeValue('white', 'gray.800'),
