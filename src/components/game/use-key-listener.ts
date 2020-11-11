@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Send } from 'store/game/machine'
+import { Send } from 'store/game/machine.types'
 
 const isValidChar = (keycode: string) => {
   return keycode.length === 1 || keycode === 'Enter'

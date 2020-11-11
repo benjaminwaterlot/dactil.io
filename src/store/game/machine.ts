@@ -1,39 +1,5 @@
-import { Event, SCXML, EventData, Machine, State, StateMachine, assign } from 'xstate'
-
-export enum KEY_STATUS {
-  NEUTRAL = 'NEUTRAL',
-  VALID = 'VALID',
-  ERROR = 'ERROR',
-}
-
-export interface GameContext {
-  sentence: string
-  activeChar: number
-  saved: {
-    key: string
-    type: KEY_STATUS
-  }
-  errors: string[]
-}
-
-export interface GameSchema {
-  states: {
-    playing: {}
-    over: {}
-  }
-}
-
-export interface GameEvent {
-  type: 'KEY_PRESS'
-  key: string
-}
-
-export type GameMachine = StateMachine<GameContext, GameSchema, GameEvent>
-export type GameMachineState = State<GameContext, GameEvent>
-export type Send = (
-  event: GameEvent | Event<GameEvent>[] | SCXML.Event<GameEvent>,
-  payload?: EventData | undefined
-) => GameMachineState
+import { Machine, assign } from 'xstate'
+import { KEY_STATUS, GameContext, GameEvent, GameSchema } from './machine.types'
 
 export const gameMachine = Machine<GameContext, GameSchema, GameEvent>(
   {
@@ -45,26 +11,45 @@ export const gameMachine = Machine<GameContext, GameSchema, GameEvent>(
         key: '',
         type: KEY_STATUS.NEUTRAL,
       },
+      startedAt: null,
       errors: [],
     },
     initial: 'playing',
     states: {
       playing: {
+        initial: 'idle',
         meta: 'Game playing !',
-
-        always: [
-          {
-            target: 'over',
-            cond: 'sentenceIsDone',
+        states: {
+          idle: {
+            meta: 'Game ready to start',
           },
-        ],
+          started: {
+            entry: 'logStartTime',
+
+            always: [
+              {
+                target: 'end',
+                cond: 'sentenceIsDone',
+              },
+            ],
+          },
+          end: {
+            type: 'final',
+          },
+        },
         on: {
           KEY_PRESS: [
-            { cond: 'isCorrectInput', actions: ['saveCorrectInput', 'incrementChar'] },
-            { actions: 'saveIncorrectInput' },
+            {
+              cond: 'isCorrectInput',
+              actions: ['saveCorrectInput', 'incrementChar'],
+              target: '.started',
+            },
+            { actions: 'saveIncorrectInput', target: '.started' },
           ],
         },
+        onDone: 'over',
       },
+
       over: {
         type: 'final',
         meta: 'Game over !',
@@ -80,7 +65,11 @@ export const gameMachine = Machine<GameContext, GameSchema, GameEvent>(
       },
       sentenceIsDone: ({ sentence, activeChar }) => activeChar === sentence.length,
     },
+
     actions: {
+      logStartTime: assign({
+        startedAt: (context) => Date.now(),
+      }),
       saveCorrectInput: assign({
         saved: (context, event) => ({
           key: event.key,

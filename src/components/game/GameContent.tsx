@@ -1,6 +1,7 @@
 import React from 'react'
 import { Heading } from '@chakra-ui/core'
-import { gameMachine, GameMachineState } from 'store/game/machine'
+import { gameMachine } from 'store/game/machine'
+import { GameMachineState } from 'store/game/machine.types'
 import useKeyListener from './use-key-listener'
 
 import GameStats from './GameStats/GameStats'
@@ -9,6 +10,7 @@ import { useMachine } from '@xstate/react'
 import sample from 'lodash/sample'
 import { useRecoilValue } from 'recoil'
 import { quotesQuery } from 'store/api/api'
+import last from 'lodash/last'
 
 interface Quote {
   _id: string
@@ -22,7 +24,12 @@ interface Quote {
   id: string
 }
 
-const getMeta = (state: GameMachineState) => state.meta[`game-machine.${state.value}`]
+const getMeta = (state: GameMachineState) => {
+  console.log(last(state.toStrings()))
+  console.log(state.context)
+
+  return state.meta[`game-machine.${last(state.toStrings())}`]
+}
 
 const GameContent = () => {
   const quotes = useRecoilValue(quotesQuery) as Quote[]

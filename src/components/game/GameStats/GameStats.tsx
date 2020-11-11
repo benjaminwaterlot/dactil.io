@@ -12,7 +12,7 @@ import {
   Wrap,
   WrapItem,
 } from '@chakra-ui/core'
-import { GameContext, KEY_STATUS } from 'store/game/machine'
+import { GameContext, KEY_STATUS } from 'store/game/machine.types'
 import { WarningTwoIcon, ArrowRightIcon } from '@chakra-ui/icons'
 import useColor from 'lib/use-color'
 
@@ -70,27 +70,29 @@ const GameStatsWPM = ({ wpm }: { wpm: number }) => (
   </Stat>
 )
 
-const GameStats = ({ context }: { context: GameContext }) => (
-  <Box position="fixed" bottom="0" left="0" w="100%">
-    <Wrap spacing={10} backgroundColor={useColor('primary.900')} p={10}>
-      <WrapItem>
-        <GameStatsErrors count={context.errors.length} />
-      </WrapItem>
-      <WrapItem>
-        <GameStatsWPM wpm={context.errors.length} />
-      </WrapItem>
-    </Wrap>
+const GameStats = ({ context }: { context: GameContext }) => {
+  return (
+    <Box position="fixed" bottom="0" left="0" w="100%">
+      <Wrap spacing={10} backgroundColor={useColor('primary.900')} p={10}>
+        <WrapItem>
+          <GameStatsErrors count={context.errors.length} />
+        </WrapItem>
+        <WrapItem>
+          <GameStatsWPM wpm={context.errors.length} />
+        </WrapItem>
+      </Wrap>
 
-    <Box
-      position="absolute"
-      top={`-${CIRCLE_SIZE * 0.7}px`}
-      left={`calc(50% - ${CIRCLE_SIZE / 2}px)`}
-    >
-      <SlideFade in={Boolean(context.saved.key)}>
-        <GameStatsChar saved={context.saved} />
-      </SlideFade>
+      <Box
+        position="absolute"
+        top={`-${CIRCLE_SIZE * 0.7}px`}
+        left={`calc(50% - ${CIRCLE_SIZE / 2}px)`}
+      >
+        <SlideFade in={Boolean(context.saved.key)}>
+          <GameStatsChar saved={context.saved} />
+        </SlideFade>
+      </Box>
     </Box>
-  </Box>
-)
+  )
+}
 
 export default GameStats
