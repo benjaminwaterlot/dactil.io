@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { HttpService, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { QuoteDto } from './dto/create-quote.dto';
+import { CreateQuoteDto } from './dto/create-quote.dto';
+import { FetchProgrammingQuote } from './dto/fetch-programming-quote.dto';
 import { Quote } from './quote.entity';
 
 @Injectable()
@@ -9,25 +10,29 @@ export class QuotesService {
   constructor(
     @InjectRepository(Quote)
     private readonly quotesRepository: Repository<Quote>,
-  ) {
-    this.init();
-  }
+    private readonly httpService: HttpService,
+  ) {}
 
   async init() {
-    console.log('>>> INIT');
-    console.log(await this.quotesRepository.find());
+    const { data: quotesFromApi } = await this.httpService
+      .get<FetchProgrammingQuote[]>(
+        'https://programming-quotes-api.herokuapp.com/quotes',
+      )
+      .toPromise();
 
-    const newz = Array(5)
-      .fill(null)
-      .map(() => this.quotesRepository.create({ text: 'loremx' }));
+    const refinedQuotes = quotesFromApi.map((quote) =>
+      this.quotesRepository.create({ text: quote.en, author: quote.author }),
+    );
 
-    console.log('🌈 : QuotesService -> init -> newz', newz);
-    await this.quotesRepository.save(newz);
+    await this.quotesRepository.delete({});
 
-    console.log(await this.quotesRepository.find());
+    const entities = await this.quotesRepository.save(refinedQuotes);
+    console.log(`${entities.length} entities saved`);
+
+    return entities;
   }
 
-  async create(quoteDto: QuoteDto) {
+  async create(quoteDto: CreateQuoteDto) {
     const quote = this.quotesRepository.create(quoteDto);
     return this.quotesRepository.save(quote);
   }

@@ -4,5 +4,8 @@
     "statusBar.foreground": "#15202b",
     "statusBarItem.hoverBackground": "#f7df1e"
   },
+  "search.exclude": {
+    "dist": true
+  },
   "peacock.color": "#f9e64f"
 }

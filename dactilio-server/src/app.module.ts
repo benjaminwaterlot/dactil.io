@@ -9,9 +9,8 @@ import { QuotesModule } from './quotes/quote.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: ':memory:',
+      database: './src/dev.db',
       synchronize: true,
-      dropSchema: true,
       autoLoadEntities: true,
     }),
     QuotesModule,
