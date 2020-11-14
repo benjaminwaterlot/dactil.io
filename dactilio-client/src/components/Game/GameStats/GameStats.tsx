@@ -12,7 +12,7 @@ import {
   Wrap,
   WrapItem,
 } from '@chakra-ui/core'
-import { GameContext, KEY_STATUS } from 'store/game/machine.types'
+import { GameContext, KEY_STATUS } from 'store/game/test.machine.types'
 import { WarningTwoIcon, ArrowRightIcon } from '@chakra-ui/icons'
 import useColor from 'lib/use-color'
 

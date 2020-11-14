@@ -1,11 +1,12 @@
 import { Machine, assign } from 'xstate'
-import { KEY_STATUS, GameContext, GameEvent, GameSchema } from './machine.types'
+import { KEY_STATUS, GameContext, GameEvent, GameSchema } from './test.machine.types'
 
-export const gameMachine = Machine<GameContext, GameSchema, GameEvent>(
+export const testMachine = Machine<GameContext, GameSchema, GameEvent>(
   {
-    id: 'game-machine',
+    id: 'test-machine',
     context: {
       sentence: '',
+      author: '',
       activeChar: 0,
       saved: {
         key: '',

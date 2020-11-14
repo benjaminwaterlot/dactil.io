@@ -17,6 +17,10 @@ const COLORS: {
       light: 'gray.900',
       dark: 'gray.100',
     },
+    '500': {
+      light: 'gray.500',
+      dark: 'gray.500',
+    },
     '600': {
       light: 'gray.400',
       dark: 'gray.600',

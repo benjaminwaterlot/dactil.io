@@ -8,6 +8,7 @@ export enum KEY_STATUS {
 
 export interface GameContext {
   sentence: string
+  author: string
   activeChar: number
   saved: {
     key: string
